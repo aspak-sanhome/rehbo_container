@@ -1,0 +1,87 @@
+#!/bin/bash
+
+#######################################################################################
+# """  
+                                                                      # ./*       
+                                                                 # .(###.         
+                                                             # *######            
+                                                         # /########              
+                                                     # ,##########                
+                                                  # (###########                  Rhebo Sensor Installion Container 
+              # /                                #(###########.                   Please adjust justin.yaml
+             # (*                             (#############(                     
+            # ,#,                          ,###############.                      
+            # #/                        (################                        
+           # /###                      ##################                         
+           # ###                    ((################(                          
+          # *####*                 /###################                           
+          # #####                ####################,                           Anton Preck
+          # ######             *#####################                            
+         # .#######/           (######################*                           
+         # *########/         #########################.                          
+         # /#########(       /###########################                         
+         # /###########,    .###############################.                """      
+
+LOG=/var/log/doit_$(date +%y_%m_%d_%H_%M).loggit
+INSTALL_DIR=/opt/rb
+DEBIAN_FRONTEND=noninteractive
+echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+echo $(date) "Container Installation - Doit script executed" > $LOG
+echo $(date) "Working in: " $(pwd) >> $LOG
+echo $(date) "Copy start script and make it executable" >> $LOG
+
+cp start.sh /root/start.sh  >> $LOG
+chmod +x /root/start.sh >> $LOG
+
+echo $(date) "Executing apt-update.." >> $LOG
+apt-get update -y >> $LOG apt-get upgrade -y >> $LOG
+
+if [ "$?" -eq "0" ]
+then
+        echo $(date) "Update and Upgrade seccessful proceed with installtion" >> $LOG
+else
+        echo $(date) "Update or Upgrade failed proceed with installtion. System might be outdated" >> $LOG
+fi
+
+echo $(date) "Installing additional debian packages....." >> $LOG
+
+apt-get install wget -y >> $LOG && apt-get install dos2unix -y >> $LOG && apt-get install vim -y >> $LOG && apt-get install dnsutils -y >> $LOG && apt-get install iputils-ping -y >> $LOG
+
+if [ "$?" -eq "0" ]
+then
+        echo $(date) "Packages installed seccessfully" >> $LOG
+else
+        echo $(date) "Failed to install packages exit Installtion" >> LOG
+        exit 1
+fi
+
+echo $(date) "Installing comonets" >> $LOG
+echo $(date) "Creating installation directory: $INSTALL_DIR" >> $LOG
+
+mkdir $INSTALL_DIR
+
+echo $(date) "Installing Rehbo Sensor packages..." >> $LOG
+
+#ip4=$(/sbin/ip -o -4 addr list veth0 | awk '{print $4}' | cut -d/ -f1) >> $LOG
+#sed -i '0,/^\([[:space:]]*srv_ip: *\).*/s//\1$ip4/;' justin.yaml >> $LOG
+
+cp justin $INSTALL_DIR
+cp justin.yaml $INSTALL_DIR
+
+echo $(date) "Sanitizing start.sh script" >> $LOG
+
+dos2unix /root/start.sh >> $LOG
+
+
+echo $(date) "Cleaning up..." >> $LOG
+
+#rm -f $INSTALL_DIR/*.tgz 
+
+apt-get clean -y >> $LOG
+apt-get autoclean -y >> $LOG
+
+echo $(date) "Rebo Sensor setup finished " >> $LOG
+
+echo $(date)   "=======doit script finished======" >> $LOG
+
