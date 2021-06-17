@@ -22,7 +22,7 @@
          # /#########(       /###########################                         
          # /###########,    .###############################.                """      
 
-LOG=/var/log/doit_$(date +%y_%m_%d_%H_%M).loggit
+LOG=/var/log/doit_$(date +%y_%m_%d_%H_%M).log
 INSTALL_DIR=/opt/rb
 DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
